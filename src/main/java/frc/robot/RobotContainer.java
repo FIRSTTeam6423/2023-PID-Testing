@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.commands.AutoDance;
 import frc.robot.commands.AutoDrive;
 import frc.robot.commands.AutoDriveForwards;
 import frc.robot.commands.AutoTurn;
@@ -21,155 +20,164 @@ import frc.robot.commands.OperateDrive;
 import frc.robot.subsystems.DriveUtil;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
+	// The robot's subsystems and commands are defined here...
 
-  private final DriveUtil driveUtil = new DriveUtil();
+	private final DriveUtil driveUtil = new DriveUtil();
 
-  private final OperateDrive operateDrive = new OperateDrive(driveUtil);
+	private final OperateDrive operateDrive = new OperateDrive(driveUtil);
 
-  private static XboxController driver;
-  // private static XboxController operator;
+	private static XboxController driver;
+	// private static XboxController operator;
 
-  /**
-   * Added a new object - JoystickButton
-   * This one is used to Toggle the Climb Arm out and back.
-   */
- 
+	/**
+	 * Added a new object - JoystickButton
+	 * This one is used to Toggle the Climb Arm out and back.
+	 */
 
-  public static SendableChooser<Byte> driveType;
-  public static SendableChooser<Byte> noobMode;
-  public static SendableChooser<String> teamColorChooser; 
-  public final static Byte arcade = 0;
-  public final static Byte tank = 1;
-  public final static Byte curvature = 2;
+	public static SendableChooser<Byte> driveType;
+	public static SendableChooser<Byte> noobMode;
+	public static SendableChooser<String> teamColorChooser;
+	public final static Byte arcade = 0;
+	public final static Byte tank = 1;
+	public final static Byte curvature = 2;
 
-  private SendableChooser<Command> autoChooser = new SendableChooser<>();
+	private SendableChooser<Command> autoChooser = new SendableChooser<>();
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
-  public RobotContainer() {
-    driver = new XboxController(Constants.XBOX_DRIVER);
+	/**
+	 * The container for the robot. Contains subsystems, OI devices, and commands.
+	 */
+	public RobotContainer() {
+		driver = new XboxController(Constants.XBOX_DRIVER);
 
-    driveType = new SendableChooser<>();
-    driveType.setDefaultOption("Arcade", arcade);
-    driveType.addOption("Tank", tank);
-    driveType.addOption("Curvature", curvature);
-    SmartDashboard.putData("Drive Type", driveType);
-    
-    // Configure the button bindings
-    configureButtonBindings();
-    configureDefaultCommands();
-    
-    autoChooser.setDefaultOption("Drive 36 inches", new AutoDriveForwards(driveUtil, 36));
-    autoChooser.addOption("Autoturn 5 Seconds", new AutoTurn(driveUtil, 0.5, 5));
-    autoChooser.addOption("AutoDrive 8 Seconds", new AutoDrive(driveUtil, .5 , 8));
-    autoChooser.addOption("Dance", new AutoDance(driveUtil));
+		driveType = new SendableChooser<>();
+		driveType.setDefaultOption("Arcade", arcade);
+		driveType.addOption("Tank", tank);
+		driveType.addOption("Curvature", curvature);
+		SmartDashboard.putData("Drive Type", driveType);
 
-    SmartDashboard.putData("Autonomous Command", autoChooser);
-  }
+		// Configure the button bindings
+		configureButtonBindings();
+		configureDefaultCommands();
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-   */
-  private void configureButtonBindings() {
-    /**
-     * Actually added code here this time.
-     * First you instantiate your Button (toggleClimb).
-     * Although you use the generic JoystickButton class here
-     * be careful.  The second variable in the constructor does all the work.
-     * I used the Button object in this class:
-     *    edu.wpi.first.wpilibj.XboxController.Button;
-     * However there are Button classes for PS4 game controllers and more!!!!
-     * Careful what you choose!
-     * 
-     */
-    
-    /**
-     * Could have done this any number of ways, a real command or an instant command.
-     * I went with InstantCommand, just as an example.  It will work.  Much more lightweight
-     * than a full blown Command class given we just want to toggle the state of something.
-     * 
-     * You will notice that we got rid of the OperateCommand() command class as it is
-     * not needed in the case of an InstantCommand().
-     * 
-     */
-  }
+		autoChooser.setDefaultOption("Drive 36 inches", new AutoDriveForwards(driveUtil, 36));
+		autoChooser.addOption("Autoturn 5 Seconds", new AutoTurn(driveUtil, 0.5, 5));
+		autoChooser.addOption("AutoDrive 8 Seconds", new AutoDrive(driveUtil, .5, 8));
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    return autoChooser.getSelected();
-  }
+		SmartDashboard.putData("Autonomous Command", autoChooser);
+	}
 
-  private void configureDefaultCommands(){
-    driveUtil.setDefaultCommand(operateDrive);
-  }
+	/**
+	 * Use this method to define your button->command mappings. Buttons can be
+	 * created by
+	 * instantiating a {@link GenericHID} or one of its subclasses ({@link
+	 * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing
+	 * it to a {@link
+	 * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+	 */
+	private void configureButtonBindings() {
+		/**
+		 * Actually added code here this time.
+		 * First you instantiate your Button (toggleClimb).
+		 * Although you use the generic JoystickButton class here
+		 * be careful. The second variable in the constructor does all the work.
+		 * I used the Button object in this class:
+		 * edu.wpi.first.wpilibj.XboxController.Button;
+		 * However there are Button classes for PS4 game controllers and more!!!!
+		 * Careful what you choose!
+		 * 
+		 */
 
-  public static double getDriverLeftXboxX(){
-    return driver.getLeftX();
-  }
+		/**
+		 * Could have done this any number of ways, a real command or an instant
+		 * command.
+		 * I went with InstantCommand, just as an example. It will work. Much more
+		 * lightweight
+		 * than a full blown Command class given we just want to toggle the state of
+		 * something.
+		 * 
+		 * You will notice that we got rid of the OperateCommand() command class as it
+		 * is
+		 * not needed in the case of an InstantCommand().
+		 * 
+		 */
+	}
 
-  public static double getDriverLeftXboxY(){
-    return driver.getLeftY();
-  }
+	/**
+	 * Use this to pass the autonomous command to the main {@link Robot} class.
+	 *
+	 * @return the command to run in autonomous
+	 */
+	public Command getAutonomousCommand() {
+		// An ExampleCommand will run in autonomous
+		return autoChooser.getSelected();
+	}
 
-  public static double getDriverRightXboxX(){
-    return driver.getRightX();
-  }
+	private void configureDefaultCommands() {
+		driveUtil.setDefaultCommand(operateDrive);
+	}
 
-  public static double getDriverRightXboxY(){
-    return driver.getRightY();
-  }
+	public static double getDriverLeftXboxX() {
+		return driver.getLeftX();
+	}
 
-  public static double getDriverLeftXboxTrigger(){
-    return driver.getLeftTriggerAxis();
-  }
+	public static double getDriverLeftXboxY() {
+		return driver.getLeftY();
+	}
 
-  public static double getDriverRightXboxTrigger(){
-    return driver.getRightTriggerAxis();
-  }
+	public static double getDriverRightXboxX() {
+		return driver.getRightX();
+	}
 
-  public static boolean getDriverAButton(){
-    return driver.getAButton();
-  }
+	public static double getDriverRightXboxY() {
+		return driver.getRightY();
+	}
 
-  public static boolean getDriverBButton(){
-    return driver.getBButton();
-  }
+	public static double getDriverLeftXboxTrigger() {
+		return driver.getLeftTriggerAxis();
+	}
 
-  public static boolean getDriverXButton(){
-    return driver.getXButton();
-  }
+	public static double getDriverRightXboxTrigger() {
+		return driver.getRightTriggerAxis();
+	}
 
-  public static boolean getDriverYButton(){
-    return driver.getYButton();
-  }
+	public static boolean getDriverAButton() {
+		return driver.getAButton();
+	}
 
-  public static boolean getDriverLeftBumper(){
-    return driver.getLeftBumper();
-  }
+	public static boolean getDriverBButton() {
+		return driver.getBButton();
+	}
 
-  public static boolean getDriverRightBumper(){
-    return driver.getRightBumper();
-  }
+	public static boolean getDriverXButton() {
+		return driver.getXButton();
+	}
 
-  public static boolean getDriverLeftStickButton(){
-    return driver.getLeftStickButton();
-  }  
+	public static boolean getDriverYButton() {
+		return driver.getYButton();
+	}
 
-  public static boolean getDriverRightStickButton(){
-    return driver.getRightStickButton();
-  } 
+	public static boolean getDriverLeftBumper() {
+		return driver.getLeftBumper();
+	}
+
+	public static boolean getDriverRightBumper() {
+		return driver.getRightBumper();
+	}
+
+	public static boolean getDriverLeftStickButton() {
+		return driver.getLeftStickButton();
+	}
+
+	public static boolean getDriverRightStickButton() {
+		return driver.getRightStickButton();
+	}
 }

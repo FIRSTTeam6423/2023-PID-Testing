@@ -9,32 +9,34 @@ import frc.robot.subsystems.DriveUtil;
 
 public class OperateDrive extends CommandBase {
 
-  private DriveUtil driveUtil;
- 
-  /** Creates a new OperateDrive. */
-  public OperateDrive(DriveUtil du) {
-    // Use addRequirements() here to declare subsystem dependencies.
-    this.driveUtil = du;
-    addRequirements(this.driveUtil);
-  }
+	private DriveUtil driveUtil;
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {}
+	/** Creates a new OperateDrive. */
+	public OperateDrive(DriveUtil du) {
+		// Use addRequirements() here to declare subsystem dependencies.
+		this.driveUtil = du;
+		addRequirements(this.driveUtil);
+	}
 
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-    driveUtil.driveRobot();
-  }
+	// Called when the command is initially scheduled.
+	@Override
+	public void initialize() {
+	}
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {}
+	// Called every time the scheduler runs while the command is scheduled.
+	@Override
+	public void execute() {
+		driveUtil.driveRobot();
+	}
 
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
+	// Called once the command ends or is interrupted.
+	@Override
+	public void end(boolean interrupted) {
+	}
+
+	// Returns true when the command should end.
+	@Override
+	public boolean isFinished() {
+		return false;
+	}
 }

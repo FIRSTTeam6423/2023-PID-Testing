@@ -12,7 +12,7 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.common.hardware.VisionLEDMode;
 import org.photonvision.targeting.PhotonTrackedTarget;
-import org.photonvision.targeting.TargetCorner;
+//import org.photonvision.targeting.TargetCorner;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -137,17 +137,24 @@ public class DriveUtil extends SubsystemBase {
                 }
                 rotation *= 0.75;
     
-                differentialDrive.curvatureDrive(rotation, (-RobotContainer.getDriverLeftXboxTrigger() + RobotContainer.getDriverRightXboxTrigger())/2, true);}
+                differentialDrive.curvatureDrive(rotation, (-RobotContainer.getDriverLeftXboxTrigger() + RobotContainer.getDriverRightXboxTrigger())/2, true);
+            }
         }
         
-      }
+    }
     
+    public void setPIDPositionTolerance(double tolerance) {
+        linearPIDController.setTolerance(tolerance);
+    }
+
     public void tankDrive(double leftSpeed, double rightSpeed) {
         differentialDrive.tankDrive(leftSpeed, rightSpeed);
     }
     
-    public void driveToSetpoint(double currentpos, double setpoint){
-        differentialDrive.arcadeDrive(0, -MathUtil.clamp(linearPIDController.calculate(currentpos, setpoint), 0, .5));
+    public boolean driveToSetpoint(double currentpos, double setpoint){
+        differentialDrive.arcadeDrive(0, -MathUtil.clamp(linearPIDController.calculate(currentpos, setpoint), 0, .1));
+        if(linearPIDController.atSetpoint()) return true;
+        return false;
     }
 
     public void stopDistance(){
@@ -169,10 +176,6 @@ public class DriveUtil extends SubsystemBase {
         rightPrimaryEncoder.setPosition(0);
         leftSecondaryEncoder.setPosition(0);
         rightSecondaryEncoder.setPosition(0);
-    }
-
-    public boolean atCurrentPIDSetpoint(){
-        return linearPIDController.atSetpoint();
     }
 
     @Override
