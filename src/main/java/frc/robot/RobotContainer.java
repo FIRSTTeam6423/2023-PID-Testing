@@ -65,7 +65,7 @@ public class RobotContainer {
     configureButtonBindings();
     configureDefaultCommands();
     
-    autoChooser.setDefaultOption("Drive 12 inches", new AutoDriveForwards(driveUtil, 12));
+    autoChooser.setDefaultOption("Drive 36 inches", new AutoDriveForwards(driveUtil, 36));
     autoChooser.addOption("Autoturn 5 Seconds", new AutoTurn(driveUtil, 0.5, 5));
     autoChooser.addOption("AutoDrive 8 Seconds", new AutoDrive(driveUtil, .5 , 8));
     autoChooser.addOption("Dance", new AutoDance(driveUtil));

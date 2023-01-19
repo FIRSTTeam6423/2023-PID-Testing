@@ -26,24 +26,32 @@ public class AutoDriveForwards extends CommandBase {
   @Override
   public void initialize() {
     done = false;
-    encoderSetpoint = driveUtil.getPosition() + inches;  }
+    driveUtil.resetEncoders();
+    encoderSetpoint = driveUtil.getPosition() + inches;
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (!driveUtil.getMoving() && driveUtil.getPosition() > encoderSetpoint - Constants.DRIVER_DEADBAND 
-    && driveUtil.getPosition() < encoderSetpoint + Constants.DRIVER_DEADBAND ){
+    //if (!driveUtil.getMoving() && driveUtil.getPosition() > encoderSetpoint - Constants.DRIVER_DEADBAND 
+    //&& driveUtil.getPosition() < encoderSetpoint + Constants.DRIVER_DEADBAND ){
+    driveUtil.driveToSetpoint(driveUtil.getPosition(), encoderSetpoint);
+
+    if (driveUtil.atCurrentPIDSetpoint())
+    {
         driveUtil.stopDistance();
         done = true;
+        driveUtil.stopDistance();
+        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
         return;
     }
-    driveUtil.operateDistance(encoderSetpoint - driveUtil.getPosition());
 }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     driveUtil.stopDistance();
+    System.out.println("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
   }
 
   // Returns true when the command should end.

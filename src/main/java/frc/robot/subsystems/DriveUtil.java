@@ -6,7 +6,6 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import org.photonvision.PhotonCamera;
@@ -15,6 +14,8 @@ import org.photonvision.common.hardware.VisionLEDMode;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import org.photonvision.targeting.TargetCorner;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -26,7 +27,7 @@ public class DriveUtil extends SubsystemBase {
     private CANSparkMax leftPrimary, leftSecondary, rightPrimary, rightSecondary; 
 
     private RelativeEncoder leftPrimaryEncoder, leftSecondaryEncoder, rightPrimaryEncoder, rightSecondaryEncoder;
-    private SparkMaxPIDController leftDriverPIDController, rightDriverPIDController; 
+    private PIDController linearPIDController; 
 
     public double setpoint;
     // Change this to match the name of your camera
@@ -63,21 +64,19 @@ public class DriveUtil extends SubsystemBase {
         rightPrimaryEncoder = rightPrimary.getEncoder();
         rightSecondaryEncoder = rightSecondary.getEncoder();
 
-        leftDriverPIDController = leftPrimary.getPIDController();
-        rightDriverPIDController = rightPrimary.getPIDController();
+        linearPIDController = new PIDController(Constants.DRIVER_P, Constants.DRIVER_I, Constants.DRIVER_D);
 
         leftPrimaryEncoder.setPositionConversionFactor(4096);
         leftSecondaryEncoder.setPositionConversionFactor(4096);
         rightPrimaryEncoder.setPositionConversionFactor(4096);
         rightSecondaryEncoder.setPositionConversionFactor(4096);
 
-        leftDriverPIDController.setP(Constants.DRIVER_P);
-        leftDriverPIDController.setI(Constants.DRIVER_I);
-        leftDriverPIDController.setD(Constants.DRIVER_D);
+        leftPrimaryEncoder.setPosition(0);
+        rightPrimaryEncoder.setPosition(0);
+        leftSecondaryEncoder.setPosition(0);
+        rightSecondaryEncoder.setPosition(0);
 
-        rightDriverPIDController.setP(Constants.DRIVER_P);
-        rightDriverPIDController.setI(Constants.DRIVER_I);
-        rightDriverPIDController.setD(Constants.DRIVER_D);
+        linearPIDController.reset();
     }
 
     /**
@@ -147,15 +146,12 @@ public class DriveUtil extends SubsystemBase {
         differentialDrive.tankDrive(leftSpeed, rightSpeed);
     }
     
-    public void operateDistance(double distance){
-        leftDriverPIDController.setReference(distance, CANSparkMax.ControlType.kPosition);
-        rightDriverPIDController.setReference(distance, CANSparkMax.ControlType.kPosition);
-        setpoint = distance;
+    public void driveToSetpoint(double currentpos, double setpoint){
+        differentialDrive.arcadeDrive(0, -MathUtil.clamp(linearPIDController.calculate(currentpos, setpoint), 0, .5));
     }
 
     public void stopDistance(){
-        leftDriverPIDController.setReference(0, CANSparkMax.ControlType.kPosition);
-        rightDriverPIDController.setReference(0, CANSparkMax.ControlType.kPosition);
+        differentialDrive.tankDrive(0, 0);
     }
 
     public double getPosition(){
@@ -168,12 +164,24 @@ public class DriveUtil extends SubsystemBase {
         return leftPrimary.get() > 0.1 && rightSecondary.get() > 0.1;
     }
 
+    public void resetEncoders(){
+        leftPrimaryEncoder.setPosition(0);
+        rightPrimaryEncoder.setPosition(0);
+        leftSecondaryEncoder.setPosition(0);
+        rightSecondaryEncoder.setPosition(0);
+    }
+
+    public boolean atCurrentPIDSetpoint(){
+        return linearPIDController.atSetpoint();
+    }
+
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
         /** This is normally where we send important values to the SmartDashboard */
         SmartDashboard.putString("Drive Type   ::  ", RobotContainer.driveType.getSelected().toString());
         SmartDashboard.putString("Yaw   ::  ", Double.toString(yaw));
+        SmartDashboard.putString("encoder  ::  ", Double.toString(getPosition()));
     }
 }
 
