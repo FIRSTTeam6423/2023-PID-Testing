@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import org.photonvision.PhotonCamera;
@@ -33,13 +34,14 @@ public class DriveUtil extends SubsystemBase {
     // Change this to match the name of your camera
     PhotonCamera camera = new PhotonCamera("johncam");
 
-    final double CAMERA_HEIGHT = 3.0; 
-    final double TARGET_HEIGHT = 3.0;
+    final double CAMERA_HEIGHT = 0.8; 
+    final double TARGET_HEIGHT = 0.8;
     final double CAMERA_PITCH_RADIANS = 0;
     final double GOAL_RANGE_METERS = 0.3;
 
     double yaw;
     double range;
+    double linearSpeed;
     // Drive controller
     private DifferentialDrive differentialDrive;
 
@@ -55,7 +57,7 @@ public class DriveUtil extends SubsystemBase {
         // Set secondaries to follow primaries
         leftSecondary.follow(leftPrimary);
         rightSecondary.follow(rightPrimary);
-        camera.setLED(VisionLEDMode.kBlink);
+        camera.setLED(VisionLEDMode.kOn);
         // Initialize DifferentialDrive controller
         differentialDrive = new DifferentialDrive(leftPrimary, rightPrimary);
 
@@ -98,30 +100,37 @@ public class DriveUtil extends SubsystemBase {
             var result = camera.getLatestResult();
             if (result.hasTargets()){
                 PhotonTrackedTarget target = result.getBestTarget();
-                range = PhotonUtils.calculateDistanceToTargetMeters(
-                    CAMERA_HEIGHT,
-                    TARGET_HEIGHT,
-                    CAMERA_PITCH_RADIANS,
-                    Units.degreesToRadians(target.getPitch())
-                );
-                if (range < Units.feetToMeters(1)){
-                    range = 0;
+                // range = PhotonUtils.calculateDistanceToTargetMeters(
+                //     CAMERA_HEIGHT,
+                //     TARGET_HEIGHT,
+                //     CAMERA_PITCH_RADIANS,
+                //     Units.degreesToRadians(target.getPitch())
+                // );
+                leftPrimary.setIdleMode(IdleMode.kCoast);
+                rightPrimary.setIdleMode(IdleMode.kCoast);
+                leftSecondary.setIdleMode(IdleMode.kCoast);
+                rightSecondary.setIdleMode(IdleMode.kCoast);
+                range = target.getArea();
+                if (range > 0.3){
+                    range = 1;
                 }
                 yaw = target.getYaw();
-                if (Math.abs(yaw) < 3){
+                if (Math.abs(yaw) < 2){
                     yaw = 0;
                 }
-                double linearSpeed = range/(2*Math.sqrt(200 + Math.pow(range, 2)));
+                linearSpeed = -linearPIDController.calculate((1/(range)), GOAL_RANGE_METERS);
                 double rotationSpeed = yaw/(2*Math.sqrt(200 + Math.pow(yaw, 2)));
                 //Forward speed and rotation speed reversed for god knows why.
                 //Maybe motor id problems
-                differentialDrive.arcadeDrive(linearSpeed, rotationSpeed);
+                differentialDrive.arcadeDrive(rotationSpeed, MathUtil.clamp(linearSpeed, -0.7, 0.7));
+            } else {
+                differentialDrive.arcadeDrive(0, 0);
             }
         } else {
             if (RobotContainer.driveType.getSelected().equals(RobotContainer.arcade)) {
                 // If we're in ARCADE mode, use arcadeDrive
                 
-                differentialDrive.arcadeDrive(RobotContainer.getDriverRightXboxX(), -RobotContainer.getDriverRightXboxY()/2);
+                differentialDrive.arcadeDrive(RobotContainer.getDriverRightXboxX(), -RobotContainer.getDriverRightXboxY()/1.5);
             } else if (RobotContainer.driveType.getSelected().equals(RobotContainer.tank)) {
                 // If we're in TANK mode, use tankDrive
                 differentialDrive.tankDrive(-RobotContainer.getDriverLeftXboxY()/2, RobotContainer.getDriverRightXboxY()/2);
@@ -185,6 +194,7 @@ public class DriveUtil extends SubsystemBase {
         SmartDashboard.putString("Drive Type   ::  ", RobotContainer.driveType.getSelected().toString());
         SmartDashboard.putString("Yaw   ::  ", Double.toString(yaw));
         SmartDashboard.putString("encoder  ::  ", Double.toString(getPosition()));
+        SmartDashboard.putString("Range  ::  ", Double.toString(range));
+        SmartDashboard.putString("lSpeed  ::  ", Double.toString(linearSpeed));
     }
 }
-
