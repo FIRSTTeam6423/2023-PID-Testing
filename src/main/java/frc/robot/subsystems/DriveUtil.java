@@ -34,14 +34,15 @@ public class DriveUtil extends SubsystemBase {
     // Change this to match the name of your camera
     PhotonCamera camera = new PhotonCamera("johncam");
 
-    final double CAMERA_HEIGHT = 0.8; 
-    final double TARGET_HEIGHT = 0.8;
+    final double CAMERA_HEIGHT = 0.8128; 
+    final double TARGET_HEIGHT = 1.2446;
     final double CAMERA_PITCH_RADIANS = 0;
     final double GOAL_RANGE_METERS = 0.3;
 
     double yaw;
     double range;
     double linearSpeed;
+    double rotationSpeed;
     // Drive controller
     private DifferentialDrive differentialDrive;
 
@@ -100,29 +101,33 @@ public class DriveUtil extends SubsystemBase {
             var result = camera.getLatestResult();
             if (result.hasTargets()){
                 PhotonTrackedTarget target = result.getBestTarget();
-                // range = PhotonUtils.calculateDistanceToTargetMeters(
-                //     CAMERA_HEIGHT,
-                //     TARGET_HEIGHT,
-                //     CAMERA_PITCH_RADIANS,
-                //     Units.degreesToRadians(target.getPitch())
-                // );
+                range = PhotonUtils.calculateDistanceToTargetMeters(
+                    CAMERA_HEIGHT,
+                    TARGET_HEIGHT,
+                    CAMERA_PITCH_RADIANS,
+                    Units.degreesToRadians(target.getPitch())
+                );
                 leftPrimary.setIdleMode(IdleMode.kCoast);
                 rightPrimary.setIdleMode(IdleMode.kCoast);
                 leftSecondary.setIdleMode(IdleMode.kCoast);
                 rightSecondary.setIdleMode(IdleMode.kCoast);
-                range = target.getArea();
-                if (range > 0.3){
-                    range = 1;
-                }
+                // range = target.getArea();
+                // if (range > 0.3){
+                //     range = 1;
+                // }
                 yaw = target.getYaw();
-                if (Math.abs(yaw) < 2){
+                if (Math.abs(yaw) < 1.5){
                     yaw = 0;
                 }
-                linearSpeed = -linearPIDController.calculate((1/(range)), GOAL_RANGE_METERS);
-                double rotationSpeed = yaw/(2*Math.sqrt(200 + Math.pow(yaw, 2)));
+                linearSpeed = -25 * linearPIDController.calculate(range, GOAL_RANGE_METERS);
+                if (Math.abs(yaw) > 11) {
+                    rotationSpeed = 4* Math.sin(0.2 * Math.PI * yaw/180);
+                } else {
+                    rotationSpeed = 0.155 * Math.sin(9 * Math.PI * yaw/180);
+                }
                 //Forward speed and rotation speed reversed for god knows why.
                 //Maybe motor id problems
-                differentialDrive.arcadeDrive(rotationSpeed, MathUtil.clamp(linearSpeed, -0.7, 0.7));
+                differentialDrive.arcadeDrive(MathUtil.clamp(rotationSpeed, -0.35, 0.35), MathUtil.clamp(linearSpeed, -0.5, 0.5)); //MathUtil.clamp(linearSpeed, -0.5, 0.5)
             } else {
                 differentialDrive.arcadeDrive(0, 0);
             }
