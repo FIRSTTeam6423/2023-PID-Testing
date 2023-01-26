@@ -29,6 +29,7 @@ public class AutoDriveForwards extends CommandBase {
 		driveUtil.resetEncoders();
 		encoderSetpoint = driveUtil.getPosition() + inches;
 		driveUtil.setPIDPositionTolerance(50);
+		driveUtil.setLinearPIDSetpoint(encoderSetpoint);
 	}
 
 	// Called every time the scheduler runs while the command is scheduled.

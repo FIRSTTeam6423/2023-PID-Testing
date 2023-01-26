@@ -79,6 +79,11 @@ public class DriveUtil extends SubsystemBase {
         leftSecondaryEncoder.setPosition(0);
         rightSecondaryEncoder.setPosition(0);
 
+        leftPrimary.setIdleMode(IdleMode.kCoast);
+        rightPrimary.setIdleMode(IdleMode.kCoast);
+        leftSecondary.setIdleMode(IdleMode.kCoast);
+        rightSecondary.setIdleMode(IdleMode.kCoast);
+
         linearPIDController.reset();
     }
 
@@ -107,10 +112,6 @@ public class DriveUtil extends SubsystemBase {
                     CAMERA_PITCH_RADIANS,
                     Units.degreesToRadians(target.getPitch())
                 );
-                leftPrimary.setIdleMode(IdleMode.kCoast);
-                rightPrimary.setIdleMode(IdleMode.kCoast);
-                leftSecondary.setIdleMode(IdleMode.kCoast);
-                rightSecondary.setIdleMode(IdleMode.kCoast);
                 // range = target.getArea();
                 // if (range > 0.3){
                 //     range = 1;
@@ -127,7 +128,7 @@ public class DriveUtil extends SubsystemBase {
                 }
                 //Forward speed and rotation speed reversed for god knows why.
                 //Maybe motor id problems
-                differentialDrive.arcadeDrive(MathUtil.clamp(rotationSpeed, -0.35, 0.35), MathUtil.clamp(linearSpeed, -0.5, 0.5)); //MathUtil.clamp(linearSpeed, -0.5, 0.5)
+                differentialDrive.arcadeDrive(MathUtil.clamp(rotationSpeed, -0.35, 0.35), linearSpeed); //MathUtil.clamp(linearSpeed, -0.5, 0.5)
             } else {
                 differentialDrive.arcadeDrive(0, 0);
             }
@@ -165,8 +166,12 @@ public class DriveUtil extends SubsystemBase {
         differentialDrive.tankDrive(leftSpeed, rightSpeed);
     }
     
+    public void setLinearPIDSetpoint(double setpoint){
+        linearPIDController.setSetpoint(setpoint);
+    }
+
     public boolean driveToSetpoint(double currentpos, double setpoint){
-        differentialDrive.arcadeDrive(0, -MathUtil.clamp(linearPIDController.calculate(currentpos, setpoint), 0, .1));
+        differentialDrive.arcadeDrive(0, -MathUtil.clamp(linearPIDController.calculate(currentpos), -0.7, 0.7));
         if(linearPIDController.atSetpoint()) return true;
         return false;
     }
@@ -176,7 +181,7 @@ public class DriveUtil extends SubsystemBase {
     }
 
     public double getPosition(){
-        double sensorPosition = (leftPrimaryEncoder.getPosition() + rightPrimaryEncoder.getPosition())/2;
+        double sensorPosition = leftPrimaryEncoder.getPosition();//(leftPrimaryEncoder.getPosition() + rightPrimaryEncoder.getPosition())/2;
 
         return sensorPosition;
     }
@@ -198,7 +203,7 @@ public class DriveUtil extends SubsystemBase {
         /** This is normally where we send important values to the SmartDashboard */
         SmartDashboard.putString("Drive Type   ::  ", RobotContainer.driveType.getSelected().toString());
         SmartDashboard.putString("Yaw   ::  ", Double.toString(yaw));
-        SmartDashboard.putString("encoder  ::  ", Double.toString(getPosition()));
+        SmartDashboard.putNumber("encoder  ::  ", getPosition());
         SmartDashboard.putString("Range  ::  ", Double.toString(range));
         SmartDashboard.putString("lSpeed  ::  ", Double.toString(linearSpeed));
     }
