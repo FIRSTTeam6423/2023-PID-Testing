@@ -21,6 +21,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import com.kauailabs.navx.frc.AHRS;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 
@@ -181,7 +182,7 @@ public class DriveUtil extends SubsystemBase {
     }
 
     public double getPosition(){
-        double sensorPosition = leftPrimaryEncoder.getPosition();//(leftPrimaryEncoder.getPosition() + rightPrimaryEncoder.getPosition())/2;
+        double sensorPosition = (leftPrimaryEncoder.getPosition() - rightPrimaryEncoder.getPosition())/2;
 
         return sensorPosition;
     }

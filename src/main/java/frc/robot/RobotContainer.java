@@ -68,8 +68,11 @@ public class RobotContainer {
 		configureButtonBindings();
 		configureDefaultCommands();
 
+		//27 in is a square
 		autoChooser.setDefaultOption("Drive 132 inches", new AutoDriveForwards(driveUtil, 132));
 		autoChooser.addOption("Drive 132 inches Backwards", new AutoDriveForwards(driveUtil, -132));
+		autoChooser.addOption("Drive 120 inches", new AutoDriveForwards(driveUtil, 120));
+		autoChooser.addOption("Drive 8 Squares", new AutoDriveForwards(driveUtil, 216));
 		autoChooser.addOption("Autoturn 5 Seconds", new AutoTurn(driveUtil, 0.5, 5));
 		autoChooser.addOption("AutoDrive 8 Seconds", new AutoDrive(driveUtil, .5, 8));
 

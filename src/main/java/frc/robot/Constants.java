@@ -24,13 +24,13 @@ public final class Constants {
         public static final double AUTO_TURN_SPEED_DAMPENING = 0.5;
         public static final double AUTO_TURN_SLOWDOWN_RANGE = 30;
 
-        public static final double TICKS_PER_INCH = 2394.5857; //26.412;//52.825;//2267.4512;
+        public static final double TICKS_PER_INCH = 2624.04427; //26.412;//52.825;//2267.4512;
         public static final double AUTO_DRIVE_SPEED = 0.4;
         public static final double AUTO_DRIVE_SPEED_DAMPENING = 0.5;
         public static final double AUTO_DRIVE_SLOWDOWN_RANGE = 12;
 
-        public static final double DRIVER_P = 0.000003;
-        public static final double DRIVER_I = 0.0;
+        public static final double DRIVER_P = 0.0000065;
+        public static final double DRIVER_I = 0.00000035;
         public static final double DRIVER_D = 0.0;
         public static final double DRIVER_F = 0.0;
         public static final double DRIVER_DEADBAND = 0;
