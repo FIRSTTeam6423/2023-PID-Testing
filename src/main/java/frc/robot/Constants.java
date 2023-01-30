@@ -37,19 +37,29 @@ public final class Constants {
         public static final double DRIVER_F = 0.0;
         public static final double DRIVER_DEADBAND = 0;
 
-        public static final double ksVolts = 0.024356;
-        public static final double kvVoltSecondsPerInch = 0.069437; // changed from meters to inches
-        public static final double kaVoltSecondsSquaredPerInch = 0.037144; // changes from meters to inches
+        public static final double ksVolts = 0.00721745;
+        public static final double kvVoltSecondsPerMeters = 2.8097; // 0.069437 in inches
+        public static final double kaVoltSecondsSquaredPerMeters = 0.38619; // changes from meters to inches
 
-        public static final double kPDrivePos = 5.4454;
-        public static final double kDDrivePos = 0.77378;
+        //public static final double kPDrivePos = 5.4454;
+        //public static final double kDDrivePos = 0.77378;
 
-        public static final double kPDriveVel = 0.017295;
+        public static final double kPDriveVel = 0.074925;
 
-        public static final double kTrackwidthInches = 22.8;
+        public static final double kTrackwidthInches = 0.57912; //22.8 inches
         public static final DifferentialDriveKinematics kDriveKinematics =
                 new DifferentialDriveKinematics(kTrackwidthInches);
-        /**
+        
+        public static final double kMaxSpeedMetersPerSecond = 3; //1783.16799018 inches per second maximum free speed
+        public static final double kMaxAccelerationInchesPerSecondSquared = 1; //Magic
+
+        public static final double kRamseteB = 2; //convergence
+        public static final double kRamseteZeta = 0.7; // damping
+
+
+
+        
+                /**
          * CargoUtil Constants
          */
         public static final int BALL_MAGNET = 6;
