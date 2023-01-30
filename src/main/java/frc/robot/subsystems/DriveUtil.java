@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.wpilibj.SPI;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 
@@ -34,6 +35,8 @@ public class DriveUtil extends SubsystemBase {
     public double setpoint;
     // Change this to match the name of your camera
     PhotonCamera camera = new PhotonCamera("johncam");
+
+    private AHRS gyro = new AHRS(SPI.Port.kMXP);
 
     final double CAMERA_HEIGHT = 0.8128; 
     final double TARGET_HEIGHT = 1.2446;
@@ -53,6 +56,8 @@ public class DriveUtil extends SubsystemBase {
         rightPrimary = new CANSparkMax(Constants.RIGHT_PRIMARY, MotorType.kBrushless);
         rightSecondary = new CANSparkMax(Constants.RIGHT_SECONDARY, MotorType.kBrushless);
         //rightPrimary.setInverted(false);
+
+        gyro.calibrate();
 
         setpoint = 0;
 
@@ -191,12 +196,22 @@ public class DriveUtil extends SubsystemBase {
         return leftPrimary.get() > 0.1 && rightSecondary.get() > 0.1;
     }
 
+    public double getPitch(){
+        return gyro.getPitch();
+    }
+
     public void resetEncoders(){
         leftPrimaryEncoder.setPosition(0);
         rightPrimaryEncoder.setPosition(0);
         leftSecondaryEncoder.setPosition(0);
         rightSecondaryEncoder.setPosition(0);
     }
+    public void drive(double leftPercentPower, double rightPercentPower) {
+        leftPrimary.set(leftPercentPower);
+        leftSecondary.set(leftPercentPower);
+        rightPrimary.set(rightPercentPower);
+        rightSecondary.set(rightPercentPower);
+      }
 
     @Override
     public void periodic() {
