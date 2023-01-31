@@ -19,6 +19,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -74,7 +75,7 @@ public class DriveUtil extends SubsystemBase {
         rightSecondaryEncoder = rightSecondary.getEncoder();
 
         linearPIDController = new PIDController(Constants.DRIVER_P, Constants.DRIVER_I, Constants.DRIVER_D);
-
+        
         leftPrimaryEncoder.setPositionConversionFactor(4096);
         leftSecondaryEncoder.setPositionConversionFactor(4096);
         rightPrimaryEncoder.setPositionConversionFactor(4096);
@@ -111,8 +112,16 @@ public class DriveUtil extends SubsystemBase {
             gyro.getRotation2d(), leftPrimaryEncoder.getPosition(), rightPrimaryEncoder.getPosition(), pose);
     } 
 
-    public double getDeading () {
+    public void zeroHeading() {
+        gyro.reset();
+    }
+
+    public double getHeading () {
         return gyro.getRotation2d().getDegrees();
+    }
+
+    public double getTurnRate() {
+        return gyro.getRate(); //might need to negate?
     }
 
     
@@ -190,6 +199,10 @@ public class DriveUtil extends SubsystemBase {
         linearPIDController.setTolerance(tolerance);
     }
 
+    public void tankDrive(double left, double right) {
+        differentialDrive.tankDrive(left, right);
+    }
+
     public void tankDriveVolts(double leftVolts, double rightVolts) {
         //differentialDrive.tankDrive(leftSpeed, rightSpeed);
         leftPrimary.setVoltage(leftVolts);
@@ -220,6 +233,12 @@ public class DriveUtil extends SubsystemBase {
     public boolean getMoving(){
         return leftPrimary.get() > 0.1 && rightSecondary.get() > 0.1;
     }
+
+    public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+        return new DifferentialDriveWheelSpeeds(leftPrimaryEncoder.getVelocity(),rightPrimaryEncoder.getVelocity());
+    }
+
+    
 
     public void resetEncoders(){
         leftPrimaryEncoder.setPosition(0);
