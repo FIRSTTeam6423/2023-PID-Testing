@@ -25,8 +25,8 @@ public class ClawUtil extends SubsystemBase {
 
     public ClawUtil(){
         grabber = new Solenoid(10, PneumaticsModuleType.CTREPCM, 0);
-        pcmCompressor = new Compressor(10, PneumaticsModuleType.CTREPCM);
-        pcmCompressor.enableDigital();
+        //pcmCompressor = new Compressor(10, PneumaticsModuleType.CTREPCM);
+        //pcmCompressor.enableDigital();
     }
 
     /**

@@ -22,15 +22,15 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.kauailabs.navx.frc.AHRS;
-import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.SerialPort;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 
 public class DriveUtil extends SubsystemBase {
-    private CANSparkMax leftPrimary, leftSecondary, rightPrimary, rightSecondary; 
+    private CANSparkMax leftPrimary, leftSecondary, rightPrimary, rightSecondary;
 
     private RelativeEncoder leftPrimaryEncoder, leftSecondaryEncoder, rightPrimaryEncoder, rightSecondaryEncoder;
-    private PIDController linearPIDController; 
+    private PIDController linearPIDController;
 
     public double setpoint;
     // Change this to match the name of your camera
@@ -38,7 +38,7 @@ public class DriveUtil extends SubsystemBase {
 
     private AHRS gyro;
 
-    final double CAMERA_HEIGHT = 0.8128; 
+    final double CAMERA_HEIGHT = 0.8128;
     final double TARGET_HEIGHT = 1.2446;
     final double CAMERA_PITCH_RADIANS = 0;
     final double GOAL_RANGE_METERS = 0.3;
@@ -50,14 +50,15 @@ public class DriveUtil extends SubsystemBase {
     // Drive controller
     private DifferentialDrive differentialDrive;
 
-    public DriveUtil() {        
+    public DriveUtil() {
         leftPrimary = new CANSparkMax(Constants.LEFT_PRIMARY, MotorType.kBrushless);
         leftSecondary = new CANSparkMax(Constants.LEFT_SECONDARY, MotorType.kBrushless);
         rightPrimary = new CANSparkMax(Constants.RIGHT_PRIMARY, MotorType.kBrushless);
         rightSecondary = new CANSparkMax(Constants.RIGHT_SECONDARY, MotorType.kBrushless);
-        //rightPrimary.setInverted(false);
+        // rightPrimary.setInverted(false);
 
-        gyro = new AHRS(SPI.Port.kMXP);
+        gyro = new AHRS();
+        gyro.reset();
         gyro.calibrate();
 
         setpoint = 0;
@@ -102,69 +103,73 @@ public class DriveUtil extends SubsystemBase {
      * The DifferentialDrive class will square inputs for us.
      * Squaring inputs results in less sensitive inputs.
      * 
-     * @param leftX the left controller's X (forward-backward) value
-     * @param leftY the left controller's Y (left-right) value
+     * @param leftX  the left controller's X (forward-backward) value
+     * @param leftY  the left controller's Y (left-right) value
      * @param rightX the right controller's X (forward-backward) value
      * @param rightY the right controller's Y (left-right) value
      */
     public void driveRobot() {
         // arcade drive
-        if (RobotContainer.getDriverBButton()){
+        if (RobotContainer.getDriverBButton()) {
             var result = camera.getLatestResult();
-            if (result.hasTargets()){
+            if (result.hasTargets()) {
                 PhotonTrackedTarget target = result.getBestTarget();
                 range = PhotonUtils.calculateDistanceToTargetMeters(
-                    CAMERA_HEIGHT,
-                    TARGET_HEIGHT,
-                    CAMERA_PITCH_RADIANS,
-                    Units.degreesToRadians(target.getPitch())
-                );
+                        CAMERA_HEIGHT,
+                        TARGET_HEIGHT,
+                        CAMERA_PITCH_RADIANS,
+                        Units.degreesToRadians(target.getPitch()));
                 // range = target.getArea();
                 // if (range > 0.3){
-                //     range = 1;
+                // range = 1;
                 // }
                 yaw = target.getYaw();
-                if (Math.abs(yaw) < 1.5){
+                if (Math.abs(yaw) < 1.5) {
                     yaw = 0;
                 }
                 linearSpeed = -25 * linearPIDController.calculate(range, GOAL_RANGE_METERS);
                 if (Math.abs(yaw) > 11) {
-                    rotationSpeed = 4* Math.sin(0.2 * Math.PI * yaw/180);
+                    rotationSpeed = 4 * Math.sin(0.2 * Math.PI * yaw / 180);
                 } else {
-                    rotationSpeed = 0.155 * Math.sin(9 * Math.PI * yaw/180);
+                    rotationSpeed = 0.155 * Math.sin(9 * Math.PI * yaw / 180);
                 }
-                //Forward speed and rotation speed reversed for god knows why.
-                //Maybe motor id problems
-                differentialDrive.arcadeDrive(MathUtil.clamp(rotationSpeed, -0.35, 0.35), linearSpeed); //MathUtil.clamp(linearSpeed, -0.5, 0.5)
+                // Forward speed and rotation speed reversed for god knows why.
+                // Maybe motor id problems
+                differentialDrive.arcadeDrive(MathUtil.clamp(rotationSpeed, -0.35, 0.35), linearSpeed); // MathUtil.clamp(linearSpeed,
+                                                                                                        // -0.5, 0.5)
             } else {
                 differentialDrive.arcadeDrive(0, 0);
             }
         } else {
             if (RobotContainer.driveType.getSelected().equals(RobotContainer.arcade)) {
                 // If we're in ARCADE mode, use arcadeDrive
-                
-                differentialDrive.arcadeDrive(RobotContainer.getDriverRightXboxX(), -RobotContainer.getDriverRightXboxY()/1.5);
+
+                differentialDrive.arcadeDrive(RobotContainer.getDriverRightXboxX(),
+                        -RobotContainer.getDriverRightXboxY() / 1.5);
             } else if (RobotContainer.driveType.getSelected().equals(RobotContainer.tank)) {
                 // If we're in TANK mode, use tankDrive
-                differentialDrive.tankDrive(-RobotContainer.getDriverLeftXboxY()/2, RobotContainer.getDriverRightXboxY()/2);
-            
+                differentialDrive.tankDrive(-RobotContainer.getDriverLeftXboxY() / 2,
+                        RobotContainer.getDriverRightXboxY() / 2);
+
             } else {
                 // If we are in CURVATURE mode, use the curvature mode
                 double rotation = RobotContainer.getDriverLeftXboxX();
                 boolean isNegative = rotation < 0;
-            
+
                 rotation *= rotation;
-                if (isNegative){
+                if (isNegative) {
                     rotation *= -1;
                 }
                 rotation *= 0.75;
-    
-                differentialDrive.curvatureDrive(rotation, (-RobotContainer.getDriverLeftXboxTrigger() + RobotContainer.getDriverRightXboxTrigger())/2, true);
+
+                differentialDrive.curvatureDrive(rotation,
+                        (-RobotContainer.getDriverLeftXboxTrigger() + RobotContainer.getDriverRightXboxTrigger()) / 2,
+                        true);
             }
         }
-        
+
     }
-    
+
     public void setPIDPositionTolerance(double tolerance) {
         linearPIDController.setTolerance(tolerance);
     }
@@ -172,47 +177,49 @@ public class DriveUtil extends SubsystemBase {
     public void tankDrive(double leftSpeed, double rightSpeed) {
         differentialDrive.tankDrive(leftSpeed, rightSpeed);
     }
-    
-    public void setLinearPIDSetpoint(double setpoint){
+
+    public void setLinearPIDSetpoint(double setpoint) {
         linearPIDController.setSetpoint(setpoint);
     }
 
-    public boolean driveToSetpoint(double currentpos, double setpoint){
+    public boolean driveToSetpoint(double currentpos, double setpoint) {
         differentialDrive.arcadeDrive(0, -MathUtil.clamp(linearPIDController.calculate(currentpos), -0.7, 0.7));
-        if(linearPIDController.atSetpoint()) return true;
+        if (linearPIDController.atSetpoint())
+            return true;
         return false;
     }
 
-    public void stopDistance(){
+    public void stopDistance() {
         differentialDrive.tankDrive(0, 0);
     }
 
-    public double getPosition(){
-        double sensorPosition = (leftPrimaryEncoder.getPosition() - rightPrimaryEncoder.getPosition())/2;
+    public double getPosition() {
+        double sensorPosition = (leftPrimaryEncoder.getPosition() - rightPrimaryEncoder.getPosition()) / 2;
 
         return sensorPosition;
     }
 
-    public boolean getMoving(){
+    public boolean getMoving() {
         return leftPrimary.get() > 0.1 && rightSecondary.get() > 0.1;
     }
 
-    // public double getPitch(){
-    //     return gyro.getPitch();
-    // }
+    public double getPitch() {
+        return gyro.getRoll();
+    }
 
-    public void resetEncoders(){
+    public void resetEncoders() {
         leftPrimaryEncoder.setPosition(0);
         rightPrimaryEncoder.setPosition(0);
         leftSecondaryEncoder.setPosition(0);
         rightSecondaryEncoder.setPosition(0);
     }
+
     public void drive(double leftPercentPower, double rightPercentPower) {
         leftPrimary.set(leftPercentPower);
         leftSecondary.set(leftPercentPower);
         rightPrimary.set(rightPercentPower);
         rightSecondary.set(rightPercentPower);
-      }
+    }
 
     @Override
     public void periodic() {

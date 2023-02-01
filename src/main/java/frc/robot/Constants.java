@@ -50,7 +50,7 @@ public final class Constants {
         public static final DifferentialDriveKinematics kDriveKinematics =
                 new DifferentialDriveKinematics(kTrackwidthInches);
         
-        public static final double BEAM_BALANACED_DRIVE_KP = 0.00000000000001; // P (Proportional) constant of a PID loop
+        public static final double BEAM_BALANACED_DRIVE_KP = 0.006; // P (Proportional) constant of a PID loop
         public static final double BEAM_BALANCED_GOAL_DEGREES = 0;
         public static final double BEAM_BALANCED_ANGLE_TRESHOLD_DEGREES = 1;
         /**
