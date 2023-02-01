@@ -16,8 +16,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.AutoDrive;
 import frc.robot.commands.AutoDriveForwards;
 import frc.robot.commands.AutoTurn;
-import frc.robot.commands.Balance;
+import frc.robot.commands.OperateClaw;
+// import frc.robot.commands.Balance;
 import frc.robot.commands.OperateDrive;
+import frc.robot.subsystems.ClawUtil;
 import frc.robot.subsystems.DriveUtil;
 
 /**
@@ -33,12 +35,15 @@ public class RobotContainer {
 	// The robot's subsystems and commands are defined here...
 
 	private final DriveUtil driveUtil = new DriveUtil();
+	private final ClawUtil clawUtil = new ClawUtil();
 
 	private final OperateDrive operateDrive = new OperateDrive(driveUtil);
-	private final Balance balanace = new Balance(driveUtil);
+	private final OperateClaw operateClaw = new OperateClaw(clawUtil);
+	// private final Balance balanace = new Balance(driveUtil);
 
 	private static XboxController driver;
-	private JoystickButton balanceButton;
+	// private JoystickButton balanceButton;
+	private JoystickButton clawButton;
 	// private static XboxController operator;
 
 	/**
@@ -91,7 +96,8 @@ public class RobotContainer {
 	 * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
 	 */
 	private void configureButtonBindings() {
-		balanceButton = new JoystickButton(driver, Button.kB.value);
+		//balanceButton = new JoystickButton(driver, Button.kB.value);
+		clawButton = new JoystickButton(driver, Button.kX.value);
 		/**
 		 * Actually added code here this time.
 		 * First you instantiate your Button (toggleClimb).
@@ -103,7 +109,8 @@ public class RobotContainer {
 		 * Careful what you choose!
 		 * 
 		 */
-		balanceButton.onTrue(balanace);
+		//balanceButton.onTrue(balanace);
+		clawButton.onTrue(new InstantCommand(() -> clawUtil.toggleClaw(), clawUtil));
 		/**
 		 * Could have done this any number of ways, a real command or an instant
 		 * command.
@@ -131,6 +138,7 @@ public class RobotContainer {
 
 	private void configureDefaultCommands() {
 		driveUtil.setDefaultCommand(operateDrive);
+		clawUtil.setDefaultCommand(operateClaw);
 	}
 
 	public static double getDriverLeftXboxX() {

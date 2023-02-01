@@ -36,7 +36,7 @@ public class DriveUtil extends SubsystemBase {
     // Change this to match the name of your camera
     PhotonCamera camera = new PhotonCamera("johncam");
 
-    private AHRS gyro = new AHRS(SPI.Port.kMXP);
+    private AHRS gyro;
 
     final double CAMERA_HEIGHT = 0.8128; 
     final double TARGET_HEIGHT = 1.2446;
@@ -57,6 +57,7 @@ public class DriveUtil extends SubsystemBase {
         rightSecondary = new CANSparkMax(Constants.RIGHT_SECONDARY, MotorType.kBrushless);
         //rightPrimary.setInverted(false);
 
+        gyro = new AHRS(SPI.Port.kMXP);
         gyro.calibrate();
 
         setpoint = 0;
@@ -196,9 +197,9 @@ public class DriveUtil extends SubsystemBase {
         return leftPrimary.get() > 0.1 && rightSecondary.get() > 0.1;
     }
 
-    public double getPitch(){
-        return gyro.getPitch();
-    }
+    // public double getPitch(){
+    //     return gyro.getPitch();
+    // }
 
     public void resetEncoders(){
         leftPrimaryEncoder.setPosition(0);
