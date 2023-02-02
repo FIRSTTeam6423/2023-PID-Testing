@@ -4,6 +4,11 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+
+import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -15,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.AutoDrive;
 import frc.robot.commands.AutoDriveForwards;
+import frc.robot.commands.AutoFollowTrajectory;
 import frc.robot.commands.AutoTurn;
 import frc.robot.commands.OperateDrive;
 import frc.robot.subsystems.DriveUtil;
@@ -52,6 +58,8 @@ public class RobotContainer {
 
 	private SendableChooser<Command> autoChooser = new SendableChooser<>();
 
+	private PathPlannerTrajectory trajectory;
+
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
 	 */
@@ -64,6 +72,8 @@ public class RobotContainer {
 		driveType.addOption("Curvature", curvature);
 		SmartDashboard.putData("Drive Type", driveType);
 
+		trajectory = PathPlanner.loadPath("Test Path", new PathConstraints(Constants.kMaxSpeedMetersPerSecond, Constants.kMaxAccelerationInchesPerSecondSquared));
+
 		// Configure the button bindings
 		configureButtonBindings();
 		configureDefaultCommands();
@@ -75,7 +85,7 @@ public class RobotContainer {
 		autoChooser.addOption("Drive 8 Squares", new AutoDriveForwards(driveUtil, 216));
 		autoChooser.addOption("Autoturn 5 Seconds", new AutoTurn(driveUtil, 0.5, 5));
 		autoChooser.addOption("AutoDrive 8 Seconds", new AutoDrive(driveUtil, .5, 8));
-
+		autoChooser.addOption("Test Trajectory", new AutoFollowTrajectory(driveUtil, trajectory));
 		SmartDashboard.putData("Autonomous Command", autoChooser);
 	}
 

@@ -10,6 +10,8 @@ import com.pathplanner.lib.commands.PPRamseteCommand;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
@@ -30,6 +32,8 @@ public class AutoFollowTrajectory extends SequentialCommandGroup {
           //  this.resetOdometry(traj.getInitialPose());
           //}
         //}),
+        new InstantCommand(() -> driveUtil.zeroHeading()),
+        new InstantCommand(() -> driveUtil.resetOdometry(new Pose2d(3.291499232571115, 4.179415538318256,new Rotation2d(0.0)))),
         new PPRamseteCommand(
             trajectory,
             driveUtil::getPose, // Pose supplier
@@ -37,9 +41,9 @@ public class AutoFollowTrajectory extends SequentialCommandGroup {
             new SimpleMotorFeedforward(Constants.ksVolts, Constants.kvVoltSecondsPerMeters, Constants.kaVoltSecondsSquaredPerMeters),
             Constants.kDriveKinematics, // DifferentialDriveKinematics
             driveUtil::getWheelSpeeds, // DifferentialDriveWheelSpeeds supplier
-            new PIDController(0, 0, 0), // Left controller. Tune these values for your robot. Leaving them 0 will only
+            new PIDController(Constants.kPDriveVel, 0, 0), // Left controller. Tune these values for your robot. Leaving them 0 will only
                                         // use feedforwards.
-            new PIDController(0, 0, 0), // Right controller (usually the same values as left controller)
+            new PIDController(Constants.kPDriveVel, 0, 0), // Right controller (usually the same values as left controller)
             driveUtil::tankDriveVolts, // Voltage biconsumer
             true, // Should the path be automatically mirrored depending on alliance color.
                   // Optional, defaults to true

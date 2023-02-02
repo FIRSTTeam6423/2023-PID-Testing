@@ -45,7 +45,7 @@ public class AutoDriveForwards extends CommandBase {
 			done = true;
 			driveUtil.stopDistance();
 			System.out.println(
-					"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+					"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 			return;
 		}
 	}
@@ -55,7 +55,7 @@ public class AutoDriveForwards extends CommandBase {
 	public void end(boolean interrupted) {
 		driveUtil.stopDistance();
 		System.out.println(
-				"EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+				"E");
 	}
 
 	// Returns true when the command should end.

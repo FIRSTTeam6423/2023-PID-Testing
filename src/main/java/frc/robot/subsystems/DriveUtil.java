@@ -206,7 +206,7 @@ public class DriveUtil extends SubsystemBase {
     public void tankDriveVolts(double leftVolts, double rightVolts) {
         //differentialDrive.tankDrive(leftSpeed, rightSpeed);
         leftPrimary.setVoltage(leftVolts);
-        rightPrimary.setVoltage(rightVolts);
+        rightPrimary.setVoltage(-rightVolts);
         differentialDrive.feed();
     }
     

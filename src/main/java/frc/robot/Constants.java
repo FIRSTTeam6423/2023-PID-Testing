@@ -50,8 +50,8 @@ public final class Constants {
         public static final DifferentialDriveKinematics kDriveKinematics =
                 new DifferentialDriveKinematics(kTrackwidthInches);
         
-        public static final double kMaxSpeedMetersPerSecond = 3; //1783.16799018 inches per second maximum free speed
-        public static final double kMaxAccelerationInchesPerSecondSquared = 1; //Magic
+        public static final double kMaxSpeedMetersPerSecond = 0.1; //1783.16799018 inches per second maximum free speed
+        public static final double kMaxAccelerationInchesPerSecondSquared = 0.1; //Magic
 
         public static final double kRamseteB = 2; //convergence
         public static final double kRamseteZeta = 0.7; // damping
