@@ -41,8 +41,7 @@ public class RobotContainer {
 	private final OperateClaw operateClaw = new OperateClaw(clawUtil);
 
 	private static XboxController driver;
-	private JoystickButton balanceButton;
-	private JoystickButton clawButton;
+	private JoystickButton balanceButton, clawButton, testButton;
 	// private static XboxController operator;
 
 	/**
@@ -97,6 +96,7 @@ public class RobotContainer {
 	private void configureButtonBindings() {
 		balanceButton = new JoystickButton(driver, Button.kB.value);
 		clawButton = new JoystickButton(driver, Button.kX.value);
+		testButton = new JoystickButton(driver, Button.kStart.value);
 		/**
 		 * Actually added code here this time.
 		 * First you instantiate your Button (toggleClimb).
@@ -110,6 +110,7 @@ public class RobotContainer {
 		 */
 		balanceButton.onTrue(new Balance(driveUtil));
 		clawButton.onTrue(new InstantCommand(() -> clawUtil.toggleClaw(), clawUtil));
+		// testButton.onTrue(new InstantCommand(() -> driveUtil.testSwerve(), driveUtil));
 		/**
 		 * Could have done this any number of ways, a real command or an instant
 		 * command.

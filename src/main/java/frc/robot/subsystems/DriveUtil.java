@@ -22,12 +22,11 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.kauailabs.navx.frc.AHRS;
-import edu.wpi.first.wpilibj.SerialPort;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 
 public class DriveUtil extends SubsystemBase {
-    private CANSparkMax leftPrimary, leftSecondary, rightPrimary, rightSecondary;
+    private CANSparkMax leftPrimary, leftSecondary, rightPrimary, rightSecondary, testlinear, testrotate;
 
     private RelativeEncoder leftPrimaryEncoder, leftSecondaryEncoder, rightPrimaryEncoder, rightSecondaryEncoder;
     private PIDController linearPIDController;
@@ -55,6 +54,8 @@ public class DriveUtil extends SubsystemBase {
         leftSecondary = new CANSparkMax(Constants.LEFT_SECONDARY, MotorType.kBrushless);
         rightPrimary = new CANSparkMax(Constants.RIGHT_PRIMARY, MotorType.kBrushless);
         rightSecondary = new CANSparkMax(Constants.RIGHT_SECONDARY, MotorType.kBrushless);
+        // testlinear = new CANSparkMax(9, MotorType.kBrushless);
+        // testrotate = new CANSparkMax(10, MotorType.kBrushless);
         // rightPrimary.setInverted(false);
 
         gyro = new AHRS();
@@ -169,6 +170,16 @@ public class DriveUtil extends SubsystemBase {
         }
 
     }
+
+    // public void testSwerve() {
+    //     testlinear.setVoltage(0.1);
+    //     testrotate.setVoltage(0.1);
+    // }
+
+    // public void stopSwerve() {
+    //     testlinear.setVoltage(0);
+    //     testrotate.setVoltage(0);
+    // }
 
     public void setPIDPositionTolerance(double tolerance) {
         linearPIDController.setTolerance(tolerance);

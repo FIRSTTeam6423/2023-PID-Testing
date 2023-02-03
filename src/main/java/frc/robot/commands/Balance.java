@@ -6,7 +6,7 @@ package frc.robot.commands;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.subsystems.DriveUtil;
-
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 // This command self=balances on the charging station using gyroscope pitch as feedback
@@ -17,6 +17,7 @@ public class Balance extends CommandBase {
   private double error;
   private double currentAngle;
   private double drivePower;
+  private Timer timer;
 
   /** Command to use Gyro data to resist the tip angle from the beam - to stabalize and balanace */
   public Balance(DriveUtil driveUtil) {
@@ -26,7 +27,10 @@ public class Balance extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+    timer = new Timer();
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -34,6 +38,7 @@ public class Balance extends CommandBase {
     // Uncomment the line below this to simulate the gyroscope axis with a controller joystick
     // Double currentAngle = -1 * Robot.controller.getRawAxis(Constants.LEFT_VERTICAL_JOYSTICK_AXIS) * 45;
     this.currentAngle = driveUtil.getPitch();
+
 
     error = Constants.BEAM_BALANCED_GOAL_DEGREES - currentAngle;
     drivePower = -Math.min(Constants.BEAM_BALANACED_DRIVE_KP * error, 1);
@@ -46,6 +51,12 @@ public class Balance extends CommandBase {
     // Limit the max power
     if (Math.abs(drivePower) > 0.4) {
       drivePower = Math.copySign(0.4, drivePower);
+    }
+
+    if (Math.abs(error) < Constants.BEAM_BALANCED_ANGLE_TRESHOLD_DEGREES){
+      timer.start();
+    } else {
+      timer.stop();
     }
 
     driveUtil.drive(-drivePower, drivePower);
@@ -65,6 +76,6 @@ public class Balance extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return Math.abs(error) < Constants.BEAM_BALANCED_ANGLE_TRESHOLD_DEGREES; // End the command when we are within the specified threshold of being 'flat' (gyroscope pitch of 0 degrees)
+    return timer.get() > 2; // End the command when we are within the specified threshold of being 'flat' (gyroscope pitch of 0 degrees)
   }
 }

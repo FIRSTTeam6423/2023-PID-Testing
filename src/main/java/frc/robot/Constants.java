@@ -52,7 +52,7 @@ public final class Constants {
         
         public static final double BEAM_BALANACED_DRIVE_KP = 0.006; // P (Proportional) constant of a PID loop
         public static final double BEAM_BALANCED_GOAL_DEGREES = 0;
-        public static final double BEAM_BALANCED_ANGLE_TRESHOLD_DEGREES = 1;
+        public static final double BEAM_BALANCED_ANGLE_TRESHOLD_DEGREES = 1.6;
         /**
          * CargoUtil Constants
          */
