@@ -24,6 +24,7 @@ import frc.robot.commands.AutoFollowTrajectory;
 import frc.robot.commands.AutoTurn;
 import frc.robot.commands.OperateClaw;
 import frc.robot.commands.Balance;
+import frc.robot.commands.EventFollow;
 import frc.robot.commands.OperateDrive;
 import frc.robot.subsystems.ClawUtil;
 import frc.robot.subsystems.DriveUtil;
@@ -78,7 +79,7 @@ public class RobotContainer {
 		driveType.addOption("Curvature", curvature);
 		SmartDashboard.putData("Drive Type", driveType);
 
-		trajectory = PathPlanner.loadPath("Simple Path", new PathConstraints(Constants.kMaxSpeedMetersPerSecond, Constants.kMaxAccelerationInchesPerSecondSquared));
+		trajectory = PathPlanner.loadPath("Test Path", new PathConstraints(Constants.kMaxSpeedMetersPerSecond, Constants.kMaxAccelerationInchesPerSecondSquared));
 
 		// Configure the button bindings
 		configureButtonBindings();
@@ -86,6 +87,7 @@ public class RobotContainer {
 
 		//27 in is a square
 		autoChooser.setDefaultOption("Test Trajectory", new AutoFollowTrajectory(driveUtil, trajectory));
+		autoChooser.addOption("TestEvent", new EventFollow(driveUtil, trajectory));
 		autoChooser.addOption("Drive 132 inches", new AutoDriveForwards(driveUtil, 132));
 		autoChooser.addOption("Drive 132 inches Backwards", new AutoDriveForwards(driveUtil, -132));
 		autoChooser.addOption("Drive 120 inches", new AutoDriveForwards(driveUtil, 120));

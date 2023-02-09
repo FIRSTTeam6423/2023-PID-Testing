@@ -229,15 +229,14 @@ public class DriveUtil extends SubsystemBase {
     }
 
     public void tankDriveVolts(double leftVolts, double rightVolts) {
-        //differentialDrive.tankDrive(leftSpeed, rightSpeed);
         leftPrimary.setVoltage(leftVolts);
         rightPrimary.setVoltage(-rightVolts);
         differentialDrive.feed();
         
-        SmartDashboard.putNumber("target left volts", leftVolts);
-        SmartDashboard.putNumber("target right volts", rightVolts);
-        System.out.println("target left volts: "+leftVolts);
-        System.out.println("target right volts: "+rightVolts);
+        // SmartDashboard.putNumber("target left volts", leftVolts);
+        // SmartDashboard.putNumber("target right volts", rightVolts);
+        // System.out.println("target left volts: "+leftVolts);
+        // System.out.println("target right volts: "+rightVolts);
     }
 
     public void setLinearPIDSetpoint(double setpoint) {
