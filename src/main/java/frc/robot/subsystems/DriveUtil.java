@@ -17,7 +17,11 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -29,7 +33,10 @@ public class DriveUtil extends SubsystemBase {
     private CANSparkMax leftPrimary, leftSecondary, rightPrimary, rightSecondary, testlinear, testrotate;
 
     private RelativeEncoder leftPrimaryEncoder, leftSecondaryEncoder, rightPrimaryEncoder, rightSecondaryEncoder;
-    private PIDController linearPIDController;
+
+    private PIDController linearPIDController; 
+    private AHRS gyro = new AHRS(SPI.Port.kMXP);
+    private final DifferentialDriveOdometry odometry;
 
     public double setpoint;
     // Change this to match the name of your camera
@@ -77,7 +84,7 @@ public class DriveUtil extends SubsystemBase {
         rightSecondaryEncoder = rightSecondary.getEncoder();
 
         linearPIDController = new PIDController(Constants.DRIVER_P, Constants.DRIVER_I, Constants.DRIVER_D);
-
+        
         leftPrimaryEncoder.setPositionConversionFactor(4096);
         leftSecondaryEncoder.setPositionConversionFactor(4096);
         rightPrimaryEncoder.setPositionConversionFactor(4096);
@@ -92,10 +99,41 @@ public class DriveUtil extends SubsystemBase {
         rightPrimary.setIdleMode(IdleMode.kCoast);
         leftSecondary.setIdleMode(IdleMode.kCoast);
         rightSecondary.setIdleMode(IdleMode.kCoast);
+        
+        odometry = 
+            new DifferentialDriveOdometry(
+                gyro.getRotation2d(), 
+                leftPrimaryEncoder.getPosition(), 
+                rightPrimaryEncoder.getPosition()
+            );
+
 
         linearPIDController.reset();
     }
 
+    public Pose2d getPose() {
+        return odometry.getPoseMeters();
+    }
+
+    public void resetOdometry(Pose2d pose) {
+        resetEncoders();
+        odometry.resetPosition(
+            gyro.getRotation2d(), leftPrimaryEncoder.getPosition(), rightPrimaryEncoder.getPosition(), pose);
+    } 
+
+    public void zeroHeading() {
+        gyro.reset();
+    }
+
+    public double getHeading () {
+        return gyro.getRotation2d().getDegrees();
+    }
+
+    public double getTurnRate() {
+        return gyro.getRate(); //might need to negate?
+    }
+
+    
     /**
      * Drive the robot based on the driveMode class parameter.
      * If in TANK mode, use leftX and rightX values.
@@ -185,8 +223,15 @@ public class DriveUtil extends SubsystemBase {
         linearPIDController.setTolerance(tolerance);
     }
 
-    public void tankDrive(double leftSpeed, double rightSpeed) {
-        differentialDrive.tankDrive(leftSpeed, rightSpeed);
+    public void tankDrive(double left, double right) {
+        differentialDrive.tankDrive(left, right);
+    }
+
+    public void tankDriveVolts(double leftVolts, double rightVolts) {
+        //differentialDrive.tankDrive(leftSpeed, rightSpeed);
+        leftPrimary.setVoltage(leftVolts);
+        rightPrimary.setVoltage(-rightVolts);
+        differentialDrive.feed();
     }
 
     public void setLinearPIDSetpoint(double setpoint) {
@@ -218,7 +263,13 @@ public class DriveUtil extends SubsystemBase {
         return gyro.getRoll();
     }
 
-    public void resetEncoders() {
+    public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+        return new DifferentialDriveWheelSpeeds(leftPrimaryEncoder.getVelocity(),rightPrimaryEncoder.getVelocity());
+    }
+
+    
+
+    public void resetEncoders(){
         leftPrimaryEncoder.setPosition(0);
         rightPrimaryEncoder.setPosition(0);
         leftSecondaryEncoder.setPosition(0);
@@ -236,6 +287,12 @@ public class DriveUtil extends SubsystemBase {
     public void periodic() {
         // This method will be called once per scheduler run
         /** This is normally where we send important values to the SmartDashboard */
+        odometry.update(
+            gyro.getRotation2d(),
+            leftPrimaryEncoder.getPosition(),
+            rightPrimaryEncoder.getPosition()
+        );
+
         SmartDashboard.putString("Drive Type   ::  ", RobotContainer.driveType.getSelected().toString());
         SmartDashboard.putString("Yaw   ::  ", Double.toString(yaw));
         SmartDashboard.putNumber("encoder  ::  ", getPosition());
