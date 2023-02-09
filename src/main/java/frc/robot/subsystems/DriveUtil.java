@@ -18,6 +18,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.util.Units;
@@ -60,6 +61,7 @@ public class DriveUtil extends SubsystemBase {
         rightSecondary = new CANSparkMax(Constants.RIGHT_SECONDARY, MotorType.kBrushless);
         //rightPrimary.setInverted(false);
 
+        //gyro.reset();
         setpoint = 0;
 
         // Set secondaries to follow primaries
@@ -94,8 +96,8 @@ public class DriveUtil extends SubsystemBase {
         odometry = 
             new DifferentialDriveOdometry(
                 gyro.getRotation2d(), 
-                leftPrimaryEncoder.getPosition(), 
-                rightPrimaryEncoder.getPosition()
+                leftPrimaryEncoder.getPosition() / Constants.TICKS_PER_METER, 
+                -rightPrimaryEncoder.getPosition() / Constants.TICKS_PER_METER
             );
 
 
@@ -110,9 +112,10 @@ public class DriveUtil extends SubsystemBase {
         resetEncoders();
         odometry.resetPosition(
             gyro.getRotation2d(), leftPrimaryEncoder.getPosition(), rightPrimaryEncoder.getPosition(), pose);
+        System.out.println("ayo we reset the GYROOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
     } 
 
-    public void zeroHeading() {
+    public void zeroHeading(double angle) {
         gyro.reset();
     }
 
@@ -208,6 +211,11 @@ public class DriveUtil extends SubsystemBase {
         leftPrimary.setVoltage(leftVolts);
         rightPrimary.setVoltage(-rightVolts);
         differentialDrive.feed();
+        
+        SmartDashboard.putNumber("target left volts", leftVolts);
+        SmartDashboard.putNumber("target right volts", rightVolts);
+        System.out.println("target left volts: "+leftVolts);
+        System.out.println("target right volts: "+rightVolts);
     }
     
     public void setLinearPIDSetpoint(double setpoint){
@@ -253,14 +261,22 @@ public class DriveUtil extends SubsystemBase {
         /** This is normally where we send important values to the SmartDashboard */
         odometry.update(
             gyro.getRotation2d(),
-            leftPrimaryEncoder.getPosition(),
-            rightPrimaryEncoder.getPosition()
+            leftPrimaryEncoder.getPosition() / Constants.TICKS_PER_METER,
+            -rightPrimaryEncoder.getPosition() / Constants.TICKS_PER_METER
         );
+        Pose2d curOdometryPose =  odometry.getPoseMeters();
+        SmartDashboard.putNumber("odometry pos x", leftPrimaryEncoder.getPosition()/Constants.TICKS_PER_METER);//curOdometryPose.getX());
+        SmartDashboard.putNumber("odometry pos y", curOdometryPose.getY());
+        SmartDashboard.putNumber("odometry angle", curOdometryPose.getRotation().getDegrees());
+        //SmartDashboard.putString("Drive Type   ::  ", RobotContainer.driveType.getSelected().toString());
+        //SmartDashboard.putString("Yaw   ::  ", Double.toString(yaw));
+       
+        //SmartDashboard.putNumber("encoder  ::  ", getPosition());
+        SmartDashboard.putNumber("encoder left", leftPrimaryEncoder.getPosition());
+        SmartDashboard.putNumber("encoder right", rightPrimaryEncoder.getPosition());
 
-        SmartDashboard.putString("Drive Type   ::  ", RobotContainer.driveType.getSelected().toString());
-        SmartDashboard.putString("Yaw   ::  ", Double.toString(yaw));
-        SmartDashboard.putNumber("encoder  ::  ", getPosition());
-        SmartDashboard.putString("Range  ::  ", Double.toString(range));
-        SmartDashboard.putString("lSpeed  ::  ", Double.toString(linearSpeed));
+        SmartDashboard.putNumber("gyro", gyro.getYaw());//gyro.getRotation2d().getDegrees());
+        //SmartDashboard.putString("Range  ::  ", Double.toString(range));
+        //SmartDashboard.putString("lSpeed  ::  ", Double.toString(linearSpeed));
     }
 }

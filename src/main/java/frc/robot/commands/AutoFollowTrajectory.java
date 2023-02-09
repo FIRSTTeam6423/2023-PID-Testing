@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPRamseteCommand;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
@@ -26,24 +27,19 @@ public class AutoFollowTrajectory extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-        //new InstantCommand(() -> {
-          // Reset odometry for the first path you run during auto
-          //if (isFirstPath) {
-          //  this.resetOdometry(traj.getInitialPose());
-          //}
-        //}),
-        new InstantCommand(() -> driveUtil.zeroHeading()),
-        new InstantCommand(() -> driveUtil.resetOdometry(new Pose2d(3.291499232571115, 4.179415538318256,new Rotation2d(0.0)))),
+        new InstantCommand(() -> {
+          driveUtil.resetOdometry(trajectory.getInitialPose());
+        }),
         new PPRamseteCommand(
             trajectory,
             driveUtil::getPose, // Pose supplier
             new RamseteController(),
-            new SimpleMotorFeedforward(Constants.ksVolts, Constants.kvVoltSecondsPerMeters, Constants.kaVoltSecondsSquaredPerMeters),
+            new SimpleMotorFeedforward(Constants.ksVolts, Constants.kvVoltSecondsPerMeters, .1),//Constants.kaVoltSecondsSquaredPerMeters),
             Constants.kDriveKinematics, // DifferentialDriveKinematics
             driveUtil::getWheelSpeeds, // DifferentialDriveWheelSpeeds supplier
-            new PIDController(Constants.kPDriveVel, 0, 0), // Left controller. Tune these values for your robot. Leaving them 0 will only
+            new PIDController(Constants.DRIVER_P, Constants.DRIVER_I, Constants.DRIVER_D), // Left controller. Tune these values for your robot. Leaving them 0 will only
                                         // use feedforwards.
-            new PIDController(Constants.kPDriveVel, 0, 0), // Right controller (usually the same values as left controller)
+            new PIDController(Constants.DRIVER_P, Constants.DRIVER_I, Constants.DRIVER_D), // Right controller (usually the same values as left controller)
             driveUtil::tankDriveVolts, // Voltage biconsumer
             true, // Should the path be automatically mirrored depending on alliance color.
                   // Optional, defaults to true

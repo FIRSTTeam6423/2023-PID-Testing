@@ -27,6 +27,8 @@ public final class Constants {
         public static final double AUTO_TURN_SLOWDOWN_RANGE = 30;
 
         public static final double TICKS_PER_INCH = 2624.04427; //26.412;//52.825;//2267.4512;
+        public static final double TICKS_PER_METER = 103308.83;
+
         public static final double AUTO_DRIVE_SPEED = 0.4;
         public static final double AUTO_DRIVE_SPEED_DAMPENING = 0.5;
         public static final double AUTO_DRIVE_SLOWDOWN_RANGE = 12;
@@ -39,7 +41,7 @@ public final class Constants {
 
         public static final double ksVolts = 0.00721745;
         public static final double kvVoltSecondsPerMeters = 2.8097; // 0.069437 in inches
-        public static final double kaVoltSecondsSquaredPerMeters = 0.38619; // changes from meters to inches
+        public static final double kaVoltSecondsSquaredPerMeters = 0;//0.38619; // changes from meters to inches
 
         //public static final double kPDrivePos = 5.4454;
         //public static final double kDDrivePos = 0.77378;
@@ -50,8 +52,8 @@ public final class Constants {
         public static final DifferentialDriveKinematics kDriveKinematics =
                 new DifferentialDriveKinematics(kTrackwidthInches);
         
-        public static final double kMaxSpeedMetersPerSecond = 0.1; //1783.16799018 inches per second maximum free speed
-        public static final double kMaxAccelerationInchesPerSecondSquared = 0.1; //Magic
+        public static final double kMaxSpeedMetersPerSecond = 0.5; //1783.16799018 inches per second maximum free speed
+        public static final double kMaxAccelerationInchesPerSecondSquared = 0.5; //Magic
 
         public static final double kRamseteB = 2; //convergence
         public static final double kRamseteZeta = 0.7; // damping

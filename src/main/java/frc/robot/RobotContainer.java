@@ -72,20 +72,20 @@ public class RobotContainer {
 		driveType.addOption("Curvature", curvature);
 		SmartDashboard.putData("Drive Type", driveType);
 
-		trajectory = PathPlanner.loadPath("Test Path", new PathConstraints(Constants.kMaxSpeedMetersPerSecond, Constants.kMaxAccelerationInchesPerSecondSquared));
+		trajectory = PathPlanner.loadPath("Simple Path", new PathConstraints(Constants.kMaxSpeedMetersPerSecond, Constants.kMaxAccelerationInchesPerSecondSquared));
 
 		// Configure the button bindings
 		configureButtonBindings();
 		configureDefaultCommands();
 
 		//27 in is a square
-		autoChooser.setDefaultOption("Drive 132 inches", new AutoDriveForwards(driveUtil, 132));
+		autoChooser.setDefaultOption("Test Trajectory", new AutoFollowTrajectory(driveUtil, trajectory));
+		autoChooser.addOption("Drive 132 inches", new AutoDriveForwards(driveUtil, 132));
 		autoChooser.addOption("Drive 132 inches Backwards", new AutoDriveForwards(driveUtil, -132));
 		autoChooser.addOption("Drive 120 inches", new AutoDriveForwards(driveUtil, 120));
 		autoChooser.addOption("Drive 8 Squares", new AutoDriveForwards(driveUtil, 216));
 		autoChooser.addOption("Autoturn 5 Seconds", new AutoTurn(driveUtil, 0.5, 5));
 		autoChooser.addOption("AutoDrive 8 Seconds", new AutoDrive(driveUtil, .5, 8));
-		autoChooser.addOption("Test Trajectory", new AutoFollowTrajectory(driveUtil, trajectory));
 		SmartDashboard.putData("Autonomous Command", autoChooser);
 	}
 
