@@ -90,6 +90,12 @@ public class DriveUtil extends SubsystemBase {
         rightPrimaryEncoder.setPositionConversionFactor(4096);
         rightSecondaryEncoder.setPositionConversionFactor(4096);
 
+        leftPrimary.setInverted(true);
+        // leftPrimaryEncoder.setInverted(true);
+        // rightPrimaryEncoder.setInverted(true);
+        // leftSecondaryEncoder.setInverted(true);
+        // rightSecondaryEncoder.setInverted(true);
+
         leftPrimaryEncoder.setPosition(0);
         rightPrimaryEncoder.setPosition(0);
         leftSecondaryEncoder.setPosition(0);
@@ -104,7 +110,7 @@ public class DriveUtil extends SubsystemBase {
             new DifferentialDriveOdometry(
                 gyro.getRotation2d(), 
                 leftPrimaryEncoder.getPosition() / Constants.TICKS_PER_METER, 
-                -rightPrimaryEncoder.getPosition() / Constants.TICKS_PER_METER
+                rightPrimaryEncoder.getPosition() / Constants.TICKS_PER_METER
             );
 
 
@@ -230,7 +236,7 @@ public class DriveUtil extends SubsystemBase {
 
     public void tankDriveVolts(double leftVolts, double rightVolts) {
         leftPrimary.setVoltage(leftVolts);
-        rightPrimary.setVoltage(-rightVolts);
+        rightPrimary.setVoltage(rightVolts); //probably is inverted rn
         differentialDrive.feed();
         
         // SmartDashboard.putNumber("target left volts", leftVolts);
@@ -295,7 +301,7 @@ public class DriveUtil extends SubsystemBase {
         odometry.update(
             gyro.getRotation2d(),
             leftPrimaryEncoder.getPosition() / Constants.TICKS_PER_METER,
-            -rightPrimaryEncoder.getPosition() / Constants.TICKS_PER_METER
+            rightPrimaryEncoder.getPosition() / Constants.TICKS_PER_METER
         );
         Pose2d curOdometryPose =  odometry.getPoseMeters();
         SmartDashboard.putNumber("odometry pos x", leftPrimaryEncoder.getPosition()/Constants.TICKS_PER_METER);//curOdometryPose.getX());

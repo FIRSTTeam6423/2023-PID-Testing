@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 
 /**
@@ -67,7 +70,45 @@ public final class Constants {
         public static final double kRamseteZeta = 0.7; // damping
 
 
+        */
+        public static final double APRIL1_X = 15.51;
+        public static final double APRIL1_Y = 1.07;
+        public static final double APRIL1_ROT = 180;
+        public static final double APRIL2_X = 15.51;
+        public static final double APRIL2_Y = 2.75;
+        public static final double APRIL2_ROT = 180;
+        public static final double APRIL3_X = 15.51;
+        public static final double APRIL3_Y = 3.74;
+        public static final double APRIL3_ROT = 180;
+        public static final double APRIL4_X = 16.18;
+        public static final double APRIL4_Y = 4.42;
+        public static final double APRIL4_ROT = 180;
+        public static final double APRIL5_X = 0.36;
+        public static final double APRIL5_Y = 4.42;
+        public static final double APRIL5_ROT = 0;
+        public static final double APRIL6_X = 1.03;
+        public static final double APRIL6_Y = 4.42;
+        public static final double APRIL6_ROT = 0;
+        public static final double APRIL7_X = 1.03;
+        public static final double APRIL7_Y = 3.74;
+        public static final double APRIL7_ROT = 0;
+        public static final double APRIL8_X = 1.03;
+        public static final double APRIL8_Y = 1.07;
+        public static final double APRIL8_ROT = 0;
+        public static final double GRID_TAG_HEIGHT = 0.46; // Tags 1-3 (red) & 6-8 (blue)
+        public static final double SUB_TAG_HEIGHT = 0.67; //Tags 4-5
+        public static final Pose3d[] TagPoses = {
+            new Pose3d(APRIL1_X,APRIL1_Y,GRID_TAG_HEIGHT, new Rotation3d(0, 0, Math.toRadians(APRIL1_ROT))),
+            new Pose3d(APRIL2_X,APRIL2_Y,GRID_TAG_HEIGHT, new Rotation3d(0, 0, Math.toRadians(APRIL2_ROT))),
+            new Pose3d(APRIL3_X,APRIL3_Y,GRID_TAG_HEIGHT, new Rotation3d(0, 0, Math.toRadians(APRIL3_ROT))),
+            new Pose3d(APRIL4_X,APRIL4_Y,SUB_TAG_HEIGHT,  new Rotation3d(0, 0, Math.toRadians(APRIL4_ROT))),
+            new Pose3d(APRIL5_X,APRIL5_Y,SUB_TAG_HEIGHT,  new Rotation3d(0, 0, Math.toRadians(APRIL5_ROT))),
+            new Pose3d(APRIL6_X,APRIL6_Y,GRID_TAG_HEIGHT, new Rotation3d(0, 0, Math.toRadians(APRIL6_ROT))),
+            new Pose3d(APRIL7_X,APRIL7_Y,GRID_TAG_HEIGHT, new Rotation3d(0, 0, Math.toRadians(APRIL7_ROT))),
+            new Pose3d(APRIL8_X,APRIL8_Y,GRID_TAG_HEIGHT, new Rotation3d(0, 0, Math.toRadians(APRIL8_ROT))),
+            };
 
+        public static final Transform3d CAMERA_TO_ROBOT=new Transform3d();
         
                 /**
          * CargoUtil Constants
